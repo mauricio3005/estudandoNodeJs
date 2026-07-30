@@ -9,41 +9,41 @@ server.listen({
 
 const database = new video()
 
-server.get("/getVideo/:id", (request, reply) => {
+server.get("/getVideo/:id", async (request, reply) => {
   const id = request.params.id
 
-  return database.listById(id)
+  return await database.listById(id)
 })
 
-server.get("/todosOsVideos", (request, reply)=> {
-    const videos = database.list()
+server.get("/todosOsVideos", async (request, reply)=> {
+    const videos = await database.list()
 
     return videos;
 })
 
-server.post("/create", (request, reply) => {
+server.post("/create", async (request, reply) => {
     const body = request.body
 
-    database.create(body)
+    await database.create(body)
 
     console.log(body)
 
-    return reply.status(201).send
+    return reply.status(201).send()
 })
 
-server.delete("/deleteVideo/:id", (request,reply) =>{
+server.delete("/deleteVideo/:id", async (request,reply) =>{
     const videoID = request.params.id
 
-    database.delete(videoID)
+    await database.delete(videoID)
 
     return reply.status(200).send()
 })
 
-server.put("/updateVideo/:id",(request,reply)=> {
+server.put("/updateVideo/:id", async (request,reply)=> {
     const videoID = request.params.id
     const video = request.body
 
-    database.update(videoID, video)
+    await database.update(videoID, video)
 
     return reply.status(200).send()
 })

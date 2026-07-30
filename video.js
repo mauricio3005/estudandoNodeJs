@@ -1,29 +1,42 @@
-import {randomUUID} from "node:crypto"
+import { randomUUID } from "node:crypto"
+  import pool from "./db.js"
 
-export class video{
-    
-    #videos = new Map()
+  export class video {
 
-    create(video){
-        const videoID = randomUUID()
-        this.#videos.set(videoID ,video)
-    }
+      async create(video) {
+          const videoID = randomUUID()
+          await pool.execute(
+              "INSERT INTO videos (id, title, description, duration) VALUES (?, ?, ?, ?)",
+              [videoID, video.title, video.description, video.duration]
+          )
+          return videoID
+      }
 
-    update(id, video){
-        this.#videos.set(id, video)
-    }
+      async update(id, video) {
+          await pool.execute(
+              "UPDATE videos SET title = ?, description = ?, duration = ? WHERE id = ?",
+              [video.title, video.description, video.duration, id]
+          )
+      }
 
-    delete(id){
-        this.#videos.delete(id)
-    }
+      async delete(id) {
+          await pool.execute(
+              "DELETE FROM videos WHERE id = ?",
+              [id]
+          )
+      }
 
-    list(){
-        return Array.from(this.#videos)
-    }
-    
-    listById(id){
-        return this.#videos.get(id)
-    }
+      async list() {
+          const [rows] = await pool.execute("SELECT * FROM videos")
+          return rows
+      }
 
+      async listById(id) {
+          const [rows] = await pool.execute(
+              "SELECT * FROM videos WHERE id = ?",
+              [id]
+          )
+          return rows[0]
+      }
 
-}
+  }
